@@ -25,3 +25,13 @@ the CLI for [[https://phacility.com/][Phabricator]].
 
       (magit-arcanist-enable))
   #+end_src
+
+* Known Issues & Solutions
+
+The current =magit-process-yes-or-no-prompt-regexp= does not capture arc input prompts, customizing to
+
+  #+begin_src
+     [[(]\([Yy]\(?:es\)?\)[/|]\([Nn]o?\)\(?:/\[fingerprint\]\)?[])] ?[?:]? ?$
+  #+end_src
+
+making the trailing =?= or =:= optional will fix this issue.

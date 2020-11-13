@@ -24,16 +24,6 @@
 
 ;; Code:
 
-(defun magit-arcanist--do-land (&optional flags)
-  "Runs `arc land' using FLAGS, e.g. \"--preview\"."
-  (interactive (magit-arcanist-land-arguments))
-  (magit-arcanist--run-arc-cmd "land" flags))
-
-(magit-define-popup magit-arcanist-land-popup
-  "Popup console for Arcanist land commands."
-  :switches '((?p "Preview" "--preview")
-              (?k "Keep branch" "--keep-branch"))
-  :actions '((?l "Land" magit-arcanist--do-land)))
 
 (provide 'magit-arcanist-land)
 

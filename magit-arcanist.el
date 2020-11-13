@@ -34,9 +34,8 @@
 ;;; Code:
 
 (require 'magit)
+(require 'with-editor)
 (require 'magit-popup)
-(require 'magit-arcanist-diff)
-(require 'magit-arcanist-land)
 
 (defcustom magit-arcanist-key (kbd "@")
   "Key to invoke the magit-arcanist popup within Magit. This
@@ -58,9 +57,10 @@ output."
 (defun magit-arcanist--run-arc-cmd (cmd &rest args)
   (let ((cmd-with-flags (append (list magit-arcanist-default-arguments cmd)
                                 (seq-filter #'identity args))))
-    (apply #'magit-start-process magit-arcanist-arc-executable nil cmd-with-flags)))
+    (with-editor "GIT_EDITOR"
+      (apply #'magit-start-process magit-arcanist-arc-executable nil cmd-with-flags))))
 
-;;;###autoload
+;; arc feature
 (defun magit-arcanist-feature (name)
   "Runs the following command: arc feature NAME."
   (interactive "sFeature branch name: ")
@@ -72,6 +72,34 @@ output."
              (?f "Feature" magit-arcanist-feature)
              (?l "Land" magit-arcanist-land-popup))
   :max-action-columns 2)
+
+;; arc land
+(defun magit-arcanist--do-land (&optional flags)
+  "Runs `arc land' using FLAGS, e.g. \"--preview\"."
+  (interactive (magit-arcanist-land-arguments))
+  (magit-arcanist--run-arc-cmd "land" flags))
+
+(magit-define-popup magit-arcanist-land-popup
+  "Popup console for Arcanist land commands."
+  :switches '((?p "Preview" "--preview")
+              (?k "Keep branch" "--keep-branch"))
+  :actions '((?l "Land" magit-arcanist--do-land)))
+
+;; arc diff
+(defun magit-arcanist--do-diff (&optional flags)
+  "Runs `arc diff' using FLAGS, e.g. \"--nolint\"."
+  (interactive (magit-arcanist-diff-arguments))
+  (magit-arcanist--run-arc-cmd "diff" flags))
+
+(magit-define-popup magit-arcanist-diff-popup
+  "Popup console for Arcanist diff commands."
+  :switches '((?l "No lint" "--nolint")
+              (?u "No unit tests" "--nounit")
+              (?c "No coverage info" "--no-coverage")
+              (?a "Amend autofixes" "--amend-autofixes")
+              (?b "browse" "--browse"))
+  :actions '((?d "Diff" magit-arcanist--do-diff)))
+
 
 (defun magit-arcanist--can-enable-p ()
   "Returns nil if preconditions for magit-arcanist initialization

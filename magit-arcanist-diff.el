@@ -26,19 +26,6 @@
 
 (require 'magit-popup)
 
-(defun magit-arcanist--do-diff (&optional flags)
-  "Runs `arc diff' using FLAGS, e.g. \"--nolint\"."
-  (interactive (magit-arcanist-diff-arguments))
-  (magit-arcanist--run-arc-cmd "diff" flags))
-
-(magit-define-popup magit-arcanist-diff-popup
-  "Popup console for Arcanist diff commands."
-  :switches '((?l "No lint" "--nolint")
-              (?u "No unit tests" "--nounit")
-              (?c "No coverage info" "--no-coverage")
-              (?a "Amend autofixes" "--amend-autofixes")
-              (?b "browse" "--browse"))
-  :actions '((?d "Diff" magit-arcanist--do-diff)))
 
 (provide 'magit-arcanist-diff)
 
