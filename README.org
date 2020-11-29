@@ -5,7 +5,7 @@ the CLI for [[https://phacility.com/][Phabricator]].
 
 * Dependencies
 
-- Magit
+- [[https://magit.vc/][Magit]]
 
 * Usage Instructions
 
@@ -57,3 +57,14 @@ Switches
 
  -d Delete branches associated with abandoned diffs (--delete-abandoned)
  -p Dry run (--dry-run)
+
+* Known Issues & Solutions
+
+The original =magit-process-yes-or-no-prompt-regexp= does not capture arc input
+prompts see [[https://github.com/magit/magit/commit/af6d542d09ddbeb9a2040ad585978c775f5277e4][related magit commit]], customizing to
+
+#+begin_src
+    [[(]\([Yy]\(?:es\)?\)[/|]\([Nn]o?\)\(?:/\[fingerprint\]\)?[])] ?[?:]? ?$
+ #+end_src
+
+fixes this, and it should be addressed in the most recent magit release.
