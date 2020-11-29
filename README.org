@@ -28,22 +28,23 @@ set prior to the enable function's invocation.
 
 Create a diff via =arc diff=
 
-Switches
-
+#+begin_src
  -l No lint (--nolint)
  -u No unit tests (--nounit)
  -c No coverage info (--no-coverage)
  -a Amend autofixes (--amend-autofixes)
  -d Create draft (--draft)
  -b browse (--browse)
+#+end_src
 
 ** Land
 
 Land the current feature via =arc land=
 
-Switches
+#+begin_src
  -p Preview (--preview)
  -k Keep branch (--keep-branch)
+#+end_src
 
 ** Feature
 
@@ -53,10 +54,10 @@ Create a feature branch using =arc feature=
 
 Clean branches related to landed diffs via =arc clean-branches=
 
-Switches
-
+#+begin_src
  -d Delete branches associated with abandoned diffs (--delete-abandoned)
  -p Dry run (--dry-run)
+ #+end_src
 
 * Known Issues & Solutions
 
