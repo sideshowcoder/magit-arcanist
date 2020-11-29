@@ -38,23 +38,27 @@
 (require 'magit-popup)
 
 (defcustom magit-arcanist-key (kbd "@")
-  "Key to invoke the magit-arcanist popup within Magit. This
-needs to be set before the call to `magit-arcanist-enable'."
+  "Key to invoke the magit-arcanist popup within Magit.
+
+This needs to be set before the call to `magit-arcanist-enable'."
   :type 'string)
 
 (defcustom magit-arcanist-arc-executable (executable-find "arc")
-  "Path to the `arc' executable. `magit-arcanist-enable' will
-fail if this path does not exist."
+  "Path to the `arc' executable.
+
+`magit-arcanist-enable' will fail if this path does not exist."
   :type 'string)
 
 (defcustom magit-arcanist-default-arguments "--no-ansi"
-  "Arguments passed to `arc' executable by default, independent
-of the command being run. Defaults to `--no-ansi' to disable
+  "Arguments passed to `arc' executable by default.
+
+Defaults to `--no-ansi' to disable
 color output which does not get interpreted by default subprocess
 output."
   :type 'string)
 
 (defun magit-arcanist--run-arc-cmd (cmd &rest args)
+  "Run arc CMD with default arguments and provided ARGS."
   (let ((cmd-with-flags (append (list magit-arcanist-default-arguments cmd)
                                 (seq-filter #'identity args))))
     (with-editor "GIT_EDITOR"
@@ -62,20 +66,33 @@ output."
 
 ;; arc feature
 (defun magit-arcanist-feature (name)
-  "Runs the following command: arc feature NAME."
+  "Run the following command: arc feature NAME."
   (interactive "sFeature branch name: ")
   (magit-arcanist--run-arc-cmd "feature" name))
+
+;; clean branches
+(defun magit-arcanist--do-clean-branches (&optional flags)
+  "Remove all branches associated with landed diffs using FLAGS."
+  (interactive (magit-arcanist-clean-branches-arguments))
+  (magit-arcanist--run-arc-cmd "clean-branches" flags))
+
+(magit-define-popup magit-arcanist-clean-branches-popup
+  "Popup console for `clean-branches' command."
+  :switches '((?d "Delete branches associated with abandoned diffs" "--delete-abandoned")
+              (?p "Dry run" "--dry-run"))
+  :actions '((?c "Clean branches" magit-arcanist--do-clean-branches)))
 
 (magit-define-popup magit-arcanist-popup
   "Popup console for Arcanist commands."
   :actions '((?d "Diff" magit-arcanist-diff-popup)
              (?f "Feature" magit-arcanist-feature)
-             (?l "Land" magit-arcanist-land-popup))
+             (?l "Land" magit-arcanist-land-popup)
+             (?c "Clean branches" magit-arcanist-clean-branches-popup))
   :max-action-columns 2)
 
 ;; arc land
 (defun magit-arcanist--do-land (&optional flags)
-  "Runs `arc land' using FLAGS, e.g. \"--preview\"."
+  "Run `arc land' using FLAGS, e.g. \"--preview\"."
   (interactive (magit-arcanist-land-arguments))
   (magit-arcanist--run-arc-cmd "land" flags))
 
@@ -87,7 +104,7 @@ output."
 
 ;; arc diff
 (defun magit-arcanist--do-diff (&optional flags)
-  "Runs `arc diff' using FLAGS, e.g. \"--nolint\"."
+  "Run `arc diff' using FLAGS, e.g. \"--nolint\"."
   (interactive (magit-arcanist-diff-arguments))
   (magit-arcanist--run-arc-cmd "diff" flags))
 
@@ -97,6 +114,7 @@ output."
               (?u "No unit tests" "--nounit")
               (?c "No coverage info" "--no-coverage")
               (?a "Amend autofixes" "--amend-autofixes")
+              (?d "Create draft" "--draft")
               (?b "browse" "--browse"))
   :actions '((?d "Diff" magit-arcanist--do-diff)))
 
